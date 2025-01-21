@@ -1,42 +1,35 @@
-// Starting a new project
+// Episode - 5
 const express = require("express");
 
 const app = express();
 
-// Handle GET requests to the /user route
-app.get("/user/:id", (req, res) => {
-  // Responds to client GET requests made specifically to the /user endpoint
-  const userId = req.params;
-  console.log(userId);
-  res.send(
-    "Checking routing using GET method. In the GET method, the server only responds to requests made to /user, not to anything else like /userxyz."
-  );
-});
-app.get("/user/:id/:name", (req, res) => {
-  // Responds to client GET requests made specifically to the /user endpoint
-  const { id, name } = req.params;
-  console.log(id);
-  console.log(name);
-  res.send(
-    "Checking routing using GET method. In the GET method, the server only responds to requests made to /user, not to anything else like /userxyz."
-  );
-});
+app.use(
+  "/user",
+  (req, res, next) => {
+    // res.send("Response from 1");
+    setTimeout(() => {
+      console.log("1st response");
+    }, 5000);
+    next();
+  },
+  (req, res, next) => {
+    console.log("2nd Responce");
+    next();
+    // res.send("Responce from 2nd");
+  },
+  [
+    (req, res, next) => {
+      console.log("3nd Responce");
+      next();
+      // res.send("Responce from 2nd");
+    },
+    (req, res, next) => {
+      console.log("4nd Responce");
+      res.send("Responce from 4nd");
+    },
+  ]
+);
 
-app.get("/user/:id/:name", (req, res) => {
-  // Responds to client GET requests made specifically to the /user endpoint
-  const { id, name } = req.params;
-  console.log(id);
-  console.log(name);
-  res.send(
-    "Checking routing using GET method. In the GET method, the server only responds to requests made to /user, not to anything else like /userxyz."
-  );
-});
-
-app.get("/user", (req, res) => {
-  const id1 = req.query.a;
-
-  res.send("A value " + id1);
-});
 app.listen(7777, () => {
-  console.log("Server is running on port 7777");
+  console.log("Server is running");
 });
