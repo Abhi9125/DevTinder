@@ -90,6 +90,41 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+//
+app.patch("/userupdate", async (req, res) => {
+  const updateUserId = req.body.userId;
+  const userupdate = req.body;
+  try {
+    const updateUser = await User.findByIdAndUpdate(
+      { _id: updateUserId },
+      userupdate,
+      { returnDocument: "after" }
+    );
+
+    console.log(updateUser);
+    res.send(updateUser);
+  } catch (error) {
+    res.status(404).send("User not updated");
+  }
+});
+
+/**
+ * Route to delete a single user by their Id.
+ * Expects 'Id' in the request body.
+ */
+app.delete("/deleteuser", async (req, res) => {
+  const userId = req.body.userId;
+
+  try {
+    const deleteUser = await User.findByIdAndDelete({ _id: userId });
+
+    console.log(User.length);
+    res.send("User Deleted Succucessfully");
+  } catch {
+    res.status(400).send("User Data not delete");
+  }
+});
+
 databaseConnection()
   .then(() => {
     console.log("Database connected...");
