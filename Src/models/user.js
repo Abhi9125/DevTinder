@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+var validator = require("validator");
 
 // Defining the schema for the User Collection
 const userSchema = mongoose.Schema(
@@ -19,6 +20,11 @@ const userSchema = mongoose.Schema(
       lowercase: true,
       unique: true,
       trim: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new error("Invalid email addresss: " + value);
+        }
+      },
     },
     password: {
       type: String,
