@@ -21,8 +21,8 @@ app.get("/user", async (req, res) => {
   try {
     const user = await User.find({ email: userEmail });
     res.send(user);
-  } catch {
-    res.status(404).send("User not found");
+  } catch (err) {
+    res.status(404).send("User not found" + err.message);
   }
 });
 
@@ -35,8 +35,8 @@ app.get("/feed", async (req, res) => {
     const alluser = await User.find({});
 
     res.send(alluser);
-  } catch {
-    res.status(404).send("User not found");
+  } catch (err) {
+    res.status(404).send("User not found" + err.message);
   }
 });
 
@@ -51,8 +51,8 @@ app.get("/id", async (req, res) => {
     const userById = await User.findById(id);
 
     res.send(userById);
-  } catch {
-    res.status(404).send("User not found");
+  } catch (err) {
+    res.status(404).send("User not found" + err.message);
   }
 });
 
@@ -66,8 +66,8 @@ app.get("/findone", async (req, res) => {
     const userById = await User.findOne({ email: emails });
 
     res.send(userById);
-  } catch {
-    res.status(404).send("User not found");
+  } catch (err) {
+    res.status(404).send("User not found" + err.message);
   }
 });
 
@@ -85,8 +85,8 @@ app.post("/signup", async (req, res) => {
     await userInstace.save();
     // Sending a success message to the client
     res.send("User Data save successfully..");
-  } catch {
-    res.status(400).send("User Data not save");
+  } catch (err) {
+    res.status(400).send("User Data not save" + err.message);
   }
 });
 
@@ -98,13 +98,13 @@ app.patch("/userupdate", async (req, res) => {
     const updateUser = await User.findByIdAndUpdate(
       { _id: updateUserId },
       userupdate,
-      { returnDocument: "after" }
+      { returnDocument: "after", runValidators: true }
     );
 
     console.log(updateUser);
     res.send(updateUser);
-  } catch (error) {
-    res.status(404).send("User not updated");
+  } catch (err) {
+    res.status(404).send("User not updated" + err.message);
   }
 });
 
@@ -120,8 +120,8 @@ app.delete("/deleteuser", async (req, res) => {
 
     console.log(User.length);
     res.send("User Deleted Succucessfully");
-  } catch {
-    res.status(400).send("User Data not delete");
+  } catch (err) {
+    res.status(400).send("User Data not delete" + err.message);
   }
 });
 
