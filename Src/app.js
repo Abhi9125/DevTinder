@@ -91,20 +91,32 @@ app.post("/signup", async (req, res) => {
 });
 
 //
-app.patch("/userupdate", async (req, res) => {
-  const updateUserId = req.body.userId;
-  const userupdate = req.body;
+
+app.patch("/userupdate/:userId", async (req, res) => {
+  const userID = req.params.userId;
+
+  const userUpdateData = req.body;
   try {
-    const updateUser = await User.findByIdAndUpdate(
-      { _id: updateUserId },
-      userupdate,
-      { returnDocument: "after", runValidators: true }
+    const Allowed_Update = ["firstName", "password", "age", "gender", "skills"];
+
+    const isUpdateAllowed = Object.keys(userUpdateData).every((k) =>
+      Allowed_Update.includes(k)
     );
+    if (!isUpdateAllowed) {
+      throw new Error("Udate not allowed");
+    }
+    if (userUpdateData?.skills?.length > 10) {
+      throw new Error("Skills cannot be more than 10");
+    }
+    const updateUser = await User.findByIdAndUpdate(userID, userUpdateData, {
+      returnDocument: "after",
+      runValidators: true,
+    });
 
     console.log(updateUser);
     res.send(updateUser);
-  } catch (err) {
-    res.status(404).send("User not updated" + err.message);
+  } catch (Error) {
+    res.status(404).send("User not updated" + Error.message);
   }
 });
 
