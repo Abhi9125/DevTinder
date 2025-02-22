@@ -6,7 +6,8 @@ const app = express();
 const databaseConnection = require("./Config/database");
 // Importing the User model
 const User = require("./models/user");
-
+const { validitation } = require("./Utils/validitation");
+const byrypt = require("bcrypt");
 // Middleware to parse the json to js object
 app.use(express.json());
 
@@ -78,11 +79,27 @@ app.get("/findone", async (req, res) => {
 app.post("/signup", async (req, res) => {
   // Creating a new user instance with sample data
 
-  const userInstace = new User(req.body);
-
   try {
+    validitation(req);
+
+    const { firstName, lastName, email, password, age, gender, skills } =
+      req.body;
+
+    const passwordHash = await byrypt.hash(password, 10);
+    console.log(passwordHash);
+
+    const userInstace = new User({
+      firstName,
+      lastName,
+      email,
+      password: passwordHash,
+      age,
+      gender,
+      skills,
+    });
     // Saving the user data to the database
     await userInstace.save();
+
     // Sending a success message to the client
     res.send("User Data save successfully..");
   } catch (err) {
