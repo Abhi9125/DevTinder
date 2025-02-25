@@ -9,10 +9,12 @@ const User = require("./models/user");
 const { validitation } = require("./Utils/validitation");
 const byrypt = require("bcrypt");
 const cookieParse = require("cookie-parser");
+const JWT = require("jsonwebtoken");
 
 // Middleware to parse the json to js object
 app.use(express.json());
-// app.use(cookieParse);
+app.use(cookieParse());
+
 /**
  * Route to retrieve a user by their email.
  * Expects 'emailId' in the request body.
@@ -122,12 +124,41 @@ app.post("/login", async (req, res) => {
     const isPasswordValid = await byrypt.compare(password, user.password);
 
     if (isPasswordValid) {
+      const token = await JWT.sign({ _id: user._id }, "Dev@Tinder123");
+
+      res.cookie("token", token);
       res.send("Login Successfull!!!");
     } else {
       throw new Error("Invalid crediantials");
     }
   } catch (err) {
     res.status(400).send("Error : " + err.message);
+  }
+});
+
+app.get("/profile", async (req, res) => {
+  try {
+    const cookies = req.cookies;
+    // console.log(cookies);
+    const { token } = cookies;
+    // console.log(token);
+    if (!token) {
+      throw new Error("Invalid Token!!!");
+    }
+
+    const decodeMessage = await JWT.verify(token, "Dev@Tinder123");
+
+    const { _id } = decodeMessage;
+
+    const user = await User.findById(_id);
+
+    if (!user) {
+      throw new Error("User does not exist!!");
+    }
+
+    res.send(user);
+  } catch (Error) {
+    res.status(404).send("Error" + Error.message);
   }
 });
 
