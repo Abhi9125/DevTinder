@@ -8,9 +8,11 @@ const databaseConnection = require("./Config/database");
 const User = require("./models/user");
 const { validitation } = require("./Utils/validitation");
 const byrypt = require("bcrypt");
+const cookieParse = require("cookie-parser");
+
 // Middleware to parse the json to js object
 app.use(express.json());
-
+// app.use(cookieParse);
 /**
  * Route to retrieve a user by their email.
  * Expects 'emailId' in the request body.
@@ -107,7 +109,27 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-//
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw new Error("User not found!!");
+    }
+
+    const isPasswordValid = await byrypt.compare(password, user.password);
+
+    if (isPasswordValid) {
+      res.send("Login Successfull!!!");
+    } else {
+      throw new Error("Invalid crediantials");
+    }
+  } catch (err) {
+    res.status(400).send("Error : " + err.message);
+  }
+});
 
 app.patch("/userupdate/:userId", async (req, res) => {
   const userID = req.params.userId;
