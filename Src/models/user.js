@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
-var validator = require("validator");
+const validator = require("validator");
+const JWT = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 // Defining the schema for the User Collection
 const userSchema = mongoose.Schema(
@@ -51,6 +53,29 @@ const userSchema = mongoose.Schema(
     timestamps: true,
   }
 );
+
+//  Not use the arrow function here bcz in arrow fuction this not use.
+userSchema.methods.getJWT = async function () {
+  // this is pointing the user schema
+  const user = this;
+
+  const token = await JWT.sign({ _id: user._id }, "Dev@Tinder123");
+
+  return token;
+};
+
+userSchema.methods.validatePassword = async function (passwordInputByUser) {
+  const user = this;
+
+  const passwordHash = user.password;
+
+  const isPasswordValid = await bcrypt.compare(
+    passwordInputByUser,
+    passwordHash
+  );
+
+  return isPasswordValid;
+};
 
 // Creating the Model for the User schema
 const User = mongoose.model("User", userSchema);

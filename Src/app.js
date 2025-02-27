@@ -61,10 +61,10 @@ app.post("/login", async (req, res) => {
       throw new Error("User not found!!");
     }
 
-    const isPasswordValid = await byrypt.compare(password, user.password);
+    const isPasswordValid = await user.validatePassword(password);
 
     if (isPasswordValid) {
-      const token = await JWT.sign({ _id: user._id }, "Dev@Tinder123");
+      const token = await user.getJWT();
 
       res.cookie("token", token);
       res.send("Login Successfull!!!");
