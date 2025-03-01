@@ -3,8 +3,8 @@ const validator = require("validator");
 const validitation = (req) => {
   const { firstName, lastName, email, password } = req.body;
 
-  if (!(firstName.length > 4 || lastName < 50)) {
-    throw new Error("Invalid frist or last name");
+  if (!(firstName.length >= 4 || lastName < 50)) {
+    throw new Error("Invalid first or last name");
   } else if (!validator.isEmail(email)) {
     throw new Error("Invaild email");
   } else if (!validator.isStrongPassword(password)) {
